@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Win Bus Live Tracking</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    #map { height: 420px; border-radius: 16px; }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-blue-100 min-h-screen flex flex-col">
+
+<header class="absolute top-0 right-0 p-6 z-20 flex gap-4">
+  <a href="app.html" class="bg-white px-5 py-2 rounded-lg shadow font-semibold text-blue-600">
+    User Login
+  </a>
+  <a href="admin.html" class="px-4 py-2 rounded-lg text-gray-700 hover:bg-gray-200">
+    Admin Portal
+  </a>
+</header>
+
+<main class="flex-grow flex items-center justify-center">
+  <div class="container mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
+
+    <!-- Map -->
+    <div class="shadow-2xl">
+      <div id="map"></div>
+    </div>
+
+    <!-- Text -->
+    <div class="bg-white p-8 rounded-2xl shadow-xl">
+      <h1 class="text-3xl font-bold mb-4">Bus Live Tracking Platform</h1>
+      <p class="text-gray-600 leading-relaxed">
+        Track buses in real-time, search by operator, route, or city, and view live
+        locations directly inside the website. Designed for both users and operators.
+      </p>
+      <p class="mt-4 font-semibold text-gray-700">
+        Fast • Secure • Real-time • Admin Controlled
+      </p>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map', {
+    zoomControl: false,
+    dragging: false,
+    scrollWheelZoom: false
+  });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png')
+    .addTo(map);
+
+  const start = [8.7642, 78.1348];   // Thoothukudi
+  const end   = [13.0827, 80.2707];  // Chennai
+
+  map.fitBounds([start, end], { padding: [40,40] });
+  L.polyline([start, end], { color:'#2563eb', weight:5 }).addTo(map);
+
+  const busIcon = L.icon({
+    iconUrl: 'https://www.freeiconspng.com/uploads/bus-icon-11.png',
+    iconSize: [40,40]
+  });
+
+  const bus = L.marker(start, { icon: busIcon }).addTo(map);
+  let p = 0, dir = 1;
+
+  function animate() {
+    p += 0.004 * dir;
+    if (p >= 1 || p <= 0) dir *= -1;
+    bus.setLatLng([
+      start[0] + (end[0] - start[0]) * p,
+      start[1] + (end[1] - start[1]) * p
+    ]);
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
+
+</body>
+</html>
